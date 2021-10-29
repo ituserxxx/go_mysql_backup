@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"time"
 )
@@ -23,19 +24,7 @@ type mysqlConfig struct {
 var saveDirName string = "/data/back_up/mysql/"
 var filePix string = "gin_vue_blog_"
 
-
-
 func main() {
-	//who := "World!"
-	//
-	////有参数通过空格隔开
-	//if len(os.Args) > 1 {
-	//	who = strings.Join(os.Args[1:], " ")
-	//}
-	//fmt.Println("Hello", who)
-
-
-
 	nowT := time.Now().Format("15:04:05")
 	fileName := filePix+time.Now().Format("2006:01:02") + "-" + nowT
 	CreateFile(fileName)
@@ -44,6 +33,7 @@ func main() {
 	c1 := "chmod 777 " +  shellFileName +" && " + shellFileName +" && rm -rf "+shellFileName
 	Command(c1)
 }
+// 创建文件
 func CreateFile(fileName string) {
 	sqlName := fileName + ".sql"
 	shellFileName := saveDirName + fileName + ".sh"
@@ -54,7 +44,6 @@ func CreateFile(fileName string) {
 		DBName:   "tcsd",
 	}
 	s1 := "#/bin/bash \n"
-
 	mysqlLogin := fmt.Sprintf(" -u%s -p%s %s", DbConfig.UserName, DbConfig.UserPass, DbConfig.DBName)
 	s2 := "docker exec -i " + mysqlContainerName + " /bin/bash -c 'mysqldump "+mysqlLogin+" > /" + sqlName + "' \n"
 	s3 := "docker cp " + mysqlContainerName + ":/" + sqlName + " " +  saveDirName + sqlName  + " \n"
@@ -65,9 +54,25 @@ func CreateFile(fileName string) {
 	}
 }
 
+// 执行命令
 func Command(cmd string) {
 	c := exec.Command("bash", "-c", cmd)
 	output, _ := c.CombinedOutput()
 	fmt.Println(string(output))
 	fmt.Print("命令执行完成")
+}
+
+
+func main1() {
+	//who := "World!"
+	//有参数通过空格隔开
+	if len(os.Args) > 1 {
+		l := len(os.Args)
+		for i := 0; i < l; i++ {
+			fmt.Println(os.Args[i])
+			fmt.Println("\n")
+		}
+		//who = strings.Join(os.Args[1:], " ")
+	}
+	//fmt.Println("Hello", who)
 }
