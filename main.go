@@ -62,7 +62,6 @@ func Command(cmd string) {
 	fmt.Print("命令执行完成")
 }
 
-
 func main1() {
 	//who := "World!"
 	//有参数通过空格隔开
