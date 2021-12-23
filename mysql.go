@@ -60,11 +60,9 @@ func main() {
 				cof.DBName = flag
 			}
 			i++
-
 		}
 		break
 	}
-
 	goRun(cof)
 }
 func goRun(cof *mysql)  {

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"os/exec"
 	"time"
 )
@@ -12,24 +11,20 @@ import (
 // docker 容器中
 // docker exec -it mysql /bin/bash -c 'mysqldump -uroot -proot databaseName > ./bak.sql'
 // docker cp mysql:/bak.sql ./bak.sql
-// 非容器中
-// mysqldump -uroot -proot databaseName > ./bak.sql
-// 持续更新中
-//
+
 type mysqlConfig struct {
 	UserName string
 	UserPass string
 	DBName string
 }
-var saveDirName string = "/data/back_up/mysql/"
-var filePix string = "gin_vue_blog_"
+var saveDirName  = "/data/back_up/mysql/"
+var filePix  = "jstgs_image"
 
 func main() {
 	nowT := time.Now().Format("15:04:05")
 	fileName := filePix+time.Now().Format("2006:01:02") + "-" + nowT
 	CreateFile(fileName)
 	shellFileName := saveDirName + fileName+ ".sh"
-
 	c1 := "chmod 777 " +  shellFileName +" && " + shellFileName +" && rm -rf "+shellFileName
 	Command(c1)
 }
@@ -41,7 +36,7 @@ func CreateFile(fileName string) {
 	var DbConfig = mysqlConfig{
 		UserName: "root",
 		UserPass: "root",
-		DBName:   "tcsd",
+		DBName:   "jstgs_image",
 	}
 	s1 := "#/bin/bash \n"
 	mysqlLogin := fmt.Sprintf(" -u%s -p%s %s", DbConfig.UserName, DbConfig.UserPass, DbConfig.DBName)
@@ -62,16 +57,3 @@ func Command(cmd string) {
 	fmt.Print("命令执行完成")
 }
 
-func main1() {
-	//who := "World!"
-	//有参数通过空格隔开
-	if len(os.Args) > 1 {
-		l := len(os.Args)
-		for i := 0; i < l; i++ {
-			fmt.Println(os.Args[i])
-			fmt.Println("\n")
-		}
-		//who = strings.Join(os.Args[1:], " ")
-	}
-	//fmt.Println("Hello", who)
-}
