@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os/exec"
-	"reflect"
 	"time"
 )
 
@@ -25,69 +23,25 @@ type mysql struct {
 
 
 func main() {
-
 	var cof = &mysql{
-		UserName:    "",
-		UserPass:    "",
-		DBName:      "",
-		SaveDirName: "",
-	}
-	for{
-		i := 0
-		for i<reflect.ValueOf(mysql{}).NumField(){
-			if cof.SaveDirName == ""{
-				fmt.Println(">>> 请输入保存的路径：")
-				var flag string
-				_, _ = fmt.Scanln(&flag)
-				cof.SaveDirName = flag
-			}
-			if cof.UserName == ""{
-				fmt.Println(">>> 请输入保存的登录Mysql用户名：")
-				var flag string
-				_, _ = fmt.Scanln(&flag)
-				cof.UserName = flag
-			}
-			if cof.UserPass == ""{
-				fmt.Println(">>> 请输入保存的登录Mysql密码：")
-				var flag string
-				_, _ = fmt.Scanln(&flag)
-				cof.UserPass = flag
-			}
-			if cof.DBName == ""{
-				fmt.Println(">>> 请输入需要同步的库：")
-				var flag string
-				_, _ = fmt.Scanln(&flag)
-				cof.DBName = flag
-			}
-			i++
-		}
-		break
+		UserName:    "root",
+		UserPass:    "root",
+		DBName:      "gin_vue_blog",
+		SaveDirName: "/data/back_up/mysql/",
 	}
 	goRun(cof)
 }
 func goRun(cof *mysql)  {
-
-	nowT := time.Now().Format("15:04:05")
-	fileName := cof.DBName+time.Now().Format("2006:01:02") + "-" + nowT
+	nowT := time.Now().Format("2006_01_02_15_04_05")
+	fileName := cof.DBName + "-" + nowT
 
 	sqlName := fileName + ".sql"
-	shellFileName := cof.SaveDirName + fileName + ".sh"
 
-	s1 := "#/bin/bash \n"
-	mysqlLogin := fmt.Sprintf(" -u%s -p%s %s", cof.UserName, cof.UserPass, cof.DBName)
-	s2 := "mysqldump "+mysqlLogin+" > /" + sqlName + "' \n"
-	s3 :=  sqlName + " " +  cof.SaveDirName+ sqlName  + " \n"
-	s := fmt.Sprintf("%s %s %s", s1, s2, s3)
-	err := ioutil.WriteFile(shellFileName, []byte(s), 0666) //直接覆盖原来的内容
-	if err != nil {
-		fmt.Println(err)
-	}
+	mysqlLogin := fmt.Sprintf("mysqldump  -u%s -p%s %s > %s", cof.UserName, cof.UserPass, cof.DBName, cof.SaveDirName +sqlName)
 
-	shellFileName = cof.SaveDirName + fileName + ".sh"
-	c1 := "chmod 777 " +  shellFileName +" && " + shellFileName +" && rm -rf "+shellFileName
+	fmt.Println("执行命令："+mysqlLogin)
 
-
-	c := exec.Command("bash", "-c", c1)
+	c := exec.Command("bash", "-c", mysqlLogin)
 	output, _ := c.CombinedOutput()
 	fmt.Println(string(output))
 	fmt.Println(cof,"命令执行完成")

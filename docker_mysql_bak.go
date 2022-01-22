@@ -21,11 +21,32 @@ var saveDirName  = "/data/back_up/mysql/"
 var filePix  = "jstgs_image"
 
 func main() {
-	nowT := time.Now().Format("15:04:05")
-	fileName := filePix+time.Now().Format("2006:01:02") + "-" + nowT
+	c1 := "ls -l |grep 'jstgs_image'|wc -l"
+	c := exec.Command("bash", "-c", c1)
+	output, _ := c.CombinedOutput()
+	fmt.Println("output-->"+string(output))
+	a := string(output)
+	fmt.Println("a-->"+a)
+}
+func main1() {
+	fileName := filePix+time.Now().Format("2006-01-02-15-04-05")
+
+	c1 := fmt.Sprintf("ls -l |grep '%s'|wc -l",filePix)
+	c := exec.Command("bash", "-c", c1)
+	output, _ := c.CombinedOutput()
+	if string(output) == "1" {
+		Command("mv")
+		return
+	}
+
+
+
 	CreateFile(fileName)
 	shellFileName := saveDirName + fileName+ ".sh"
 	c1 := "chmod 777 " +  shellFileName +" && " + shellFileName +" && rm -rf "+shellFileName
+
+
+
 	Command(c1)
 }
 // 创建文件
